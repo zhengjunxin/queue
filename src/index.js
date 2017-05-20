@@ -25,6 +25,7 @@ class Queue {
         })
         this._workers = []
         this._workersList = []
+        this._idle = true
 
         setTimeout(() => {
             this.bulk()
@@ -49,6 +50,7 @@ class Queue {
                 worker.callback(...args)
             }
             if (this._workersList.length === 0 && this._workers.length === 0 && typeof this.drain === 'function') {
+                this._idle = true
                 this.drain()
             }
             this.next()
@@ -58,6 +60,7 @@ class Queue {
     push(task, callback) {
         const worker = {task, callback}
         this._workers.push(worker)
+        this._idle = false
     }
     next() {
         if (this.concurrency > this._workersList.length && this._workers.length) {
@@ -86,6 +89,10 @@ class Queue {
     unshift(task, callback) {
         const worker = {task, callback}
         this._workers.unshift(worker)
+        this._idle = false
+    }
+    idle() {
+        return this._idle
     }
 }
 
