@@ -84,6 +84,10 @@ class Queue {
     running() {
         return this._workersList.length
     }
+    unshift(task, callback) {
+        const worker = {task, callback};
+        this._workers.unshift(worker);
+    }
 }
 
 function queue(...args) {
