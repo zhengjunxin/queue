@@ -44,7 +44,11 @@ class Queue {
     }
     run(worker) {
         this._workersList.push(worker);
-        this.queue(worker.task, (...args) => {
+        function done(...args) {
+            if (done.called) {
+                throw new Error('Callback was already called')
+            }
+            done.called = true;
             this.pull(worker);
 
             if (typeof worker.callback === 'function') {
@@ -54,7 +58,8 @@ class Queue {
                 this.drain();
             }
             this.next();
-        });
+        }
+        this.queue(worker.task, done.bind(this));
     }
     push(task, callback) {
         const worker = {task, callback};
