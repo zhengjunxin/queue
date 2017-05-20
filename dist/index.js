@@ -5,7 +5,7 @@
 }(this, (function (exports) { 'use strict';
 
 class Queue {
-    constructor(queue, concurrency) {
+    constructor(queue, concurrency = 1) {
         this.queue = queue;
         this.concurrency = concurrency;
 
