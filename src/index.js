@@ -39,7 +39,6 @@ class Queue {
         }, 0)
     }
     run(worker) {
-        this._workersList.push(worker)
         function done(...args) {
             if (done.called) {
                 throw new Error('Callback was already called')
@@ -68,6 +67,10 @@ class Queue {
             const worker = this._workers.shift()
 
             if (worker) {
+                this._workersList.push(worker)
+                if (this._workers.length === 0 && typeof this.empty === 'function') {
+                    this.empty()
+                }
                 this.run(worker)
             }
         }
