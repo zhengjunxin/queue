@@ -4,13 +4,16 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "mocha"
+    "test": "mocha",
+    "dev": "rollup -c -w"
   },
   "author": "",
   "license": "ISC",
   "devDependencies": {
     "async.setimmediate": "^0.5.2",
     "chai": "^3.5.0",
-    "mocha": "^3.4.1"
+    "mocha": "^3.4.1",
+    "rollup": "^0.41.6",
+    "rollup-watch": "^3.2.2"
   }
 }
