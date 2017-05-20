@@ -103,6 +103,10 @@ class Queue {
 
         this.bulk()
     }
+    kill() {
+        this._workers.length = 0
+        this._idle = true
+    }
 }
 
 export function queue(...args) {
