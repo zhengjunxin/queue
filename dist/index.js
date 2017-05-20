@@ -4,10 +4,20 @@
 	(factory((global.queue = global.queue || {})));
 }(this, (function (exports) { 'use strict';
 
+const checkConcurrency = (concurrency = 1) => {
+    if (concurrency == null) {
+        concurrency = 1;
+    }
+    else if (concurrency === 0) {
+        throw new Error('Concurrency must not be zero')
+    }
+    return concurrency
+};
+
 class Queue {
-    constructor(queue, concurrency = 1) {
+    constructor(queue, concurrency) {
         this.queue = queue;
-        this.concurrency = concurrency;
+        this.concurrency = checkConcurrency(concurrency);
 
         this._workers = [];
         this._workersList = [];
