@@ -11,8 +11,18 @@ const checkConcurrency = (concurrency = 1) => {
 class Queue {
     constructor(queue, concurrency) {
         this.queue = queue
-        this.concurrency = checkConcurrency(concurrency)
+        this._concurrency = checkConcurrency(concurrency)
 
+        Object.defineProperty(this, 'concurrency', {
+            get: () => {
+                return this._concurrency
+            },
+            set: (value) => {
+                console.log('set', value)
+                this._concurrency = value
+                this.bulk()
+            }
+        })
         this._workers = []
         this._workersList = []
 
@@ -21,10 +31,9 @@ class Queue {
         }, 0)
     }
     bulk() {
-        const bulkNum = Math.min(this.concurrency, this._workers.length)
+        const bulkNum = Math.min(this._concurrency, this._workers.length)
         for (let i = 0; i < bulkNum; i++) {
             const worker = this.next()
-            console.log(worker)
         }
     }
     run(worker) {
@@ -51,7 +60,6 @@ class Queue {
 
             if (worker) {
                 this.run(worker)
-                return worker
             }
         }
     }
@@ -66,6 +74,9 @@ class Queue {
         if (index !== -1) {
             this._workersList.splice(index, 1)
         }
+    }
+    running() {
+        return this._workersList.length
     }
 }
 
