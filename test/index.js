@@ -369,7 +369,9 @@ describe('queue', function(){
         var q = queue(function (task, callback) {
             running++;
             call_order.push('process ' + task);
+            // [process1, process2]
             concurrencyList.push(running);
+            // [1, 2,]
             setTimeout(function () {
                 running--;
                 callback();

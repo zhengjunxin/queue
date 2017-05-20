@@ -26,16 +26,17 @@ class Queue {
         this._workers = []
         this._workersList = []
         this._idle = true
+        this.paused = false
 
-        setTimeout(() => {
-            this.bulk()
-        }, 0)
+        this.bulk()
     }
     bulk() {
-        const bulkNum = Math.min(this._concurrency, this._workers.length)
-        for (let i = 0; i < bulkNum; i++) {
-            const worker = this.next()
-        }
+        setTimeout(() => {
+            const bulkNum = Math.min(this._concurrency, this._workers.length)
+            for (let i = 0; i < bulkNum; i++) {
+                const worker = this.next()
+            }
+        }, 0)
     }
     run(worker) {
         this._workersList.push(worker)
@@ -59,11 +60,11 @@ class Queue {
     }
     push(task, callback) {
         const worker = {task, callback}
-        this._workers.push(worker)
         this._idle = false
+        this._workers.push(worker)
     }
     next() {
-        if (this.concurrency > this._workersList.length && this._workers.length) {
+        if (!this.paused && this.concurrency > this._workersList.length && this._workers.length) {
             const worker = this._workers.shift()
 
             if (worker) {
@@ -88,11 +89,19 @@ class Queue {
     }
     unshift(task, callback) {
         const worker = {task, callback}
-        this._workers.unshift(worker)
         this._idle = false
+        this._workers.unshift(worker)
     }
     idle() {
         return this._idle
+    }
+    pause() {
+        this.paused = true
+    }
+    resume() {
+        this.paused = false
+
+        this.bulk()
     }
 }
 
