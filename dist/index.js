@@ -159,6 +159,12 @@ class Queue {
             }
         }
     }
+    remove(callback) {
+        this._workers = this._workers.filter((worker, index) => {
+            const node = {data: worker.task, priority: index};
+            return !callback(node)
+        });
+    }
 }
 
 function queue(...args) {

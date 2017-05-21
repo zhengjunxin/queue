@@ -153,6 +153,12 @@ class Queue {
             }
         }
     }
+    remove(callback) {
+        this._workers = this._workers.filter((worker, index) => {
+            const node = {data: worker.task, priority: index}
+            return !callback(node)
+        })
+    }
 }
 
 export function queue(...args) {
