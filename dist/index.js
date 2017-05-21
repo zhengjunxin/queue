@@ -30,7 +30,6 @@ class Queue {
                 return this._concurrency
             },
             set: (value) => {
-                console.log('set', value);
                 this._concurrency = value;
                 this.bulk();
             }
@@ -88,6 +87,9 @@ class Queue {
                 this._workersList.push(worker);
                 if (this._workers.length === 0 && typeof this.empty === 'function') {
                     this.empty();
+                }
+                if (this._workersList.length === this._concurrency && typeof this.saturated === 'function') {
+                    this.saturated();
                 }
                 this.run(worker);
             }

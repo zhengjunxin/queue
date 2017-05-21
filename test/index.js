@@ -446,32 +446,6 @@ describe('queue', function(){
         };
     });
 
-    it('start paused', function(done) {
-        var q = queue(function (task, callback) {
-            setTimeout(function () {
-                callback();
-            }, 40);
-        }, 2);
-        q.pause();
-
-        q.push([1, 2, 3]);
-
-        setTimeout(function () {
-            expect(q.running()).to.equal(0);
-            q.resume();
-        }, 5);
-
-        setTimeout(function () {
-            expect(q._tasks.length).to.equal(1);
-            expect(q.running()).to.equal(2);
-            q.resume();
-        }, 15);
-
-        q.drain = function () {
-            done();
-        };
-    });
-
     it('kill', function(done) {
         var q = queue(function (/*task, callback*/) {
             setTimeout(function () {
