@@ -78,7 +78,7 @@ class Queue {
             if (typeof worker.callback === 'function') {
                 worker.callback(...args);
             }
-            if (this._workersList.length < this._concurrency - this.buffer && typeof this.unsaturated === 'function') {
+            if (this._workersList.length <= this._concurrency - this.buffer && typeof this.unsaturated === 'function') {
                 this.unsaturated();
             }
             this._drain();
