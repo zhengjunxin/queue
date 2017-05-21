@@ -37,8 +37,13 @@ class Queue {
     bulk() {
         setTimeout(() => {
             const bulkNum = Math.min(this._concurrency, this._workers.length)
-            for (let i = 0; i < bulkNum; i++) {
-                const worker = this.next()
+            if (bulkNum) {
+                for (let i = 0; i < bulkNum; i++) {
+                    const worker = this.next()
+                }
+            }
+            else {
+                this._drain()
             }
         }, 0)
     }
@@ -56,10 +61,7 @@ class Queue {
             if (typeof worker.callback === 'function') {
                 worker.callback(...args)
             }
-            if (this._workersList.length === 0 && this._workers.length === 0 && typeof this.drain === 'function') {
-                this._idle = true
-                this.drain()
-            }
+            this._drain()
             this.next()
         }
         this.queue(worker.task, done.bind(this))
@@ -127,6 +129,12 @@ class Queue {
     kill() {
         this._workers.length = 0
         this._idle = true
+    }
+    _drain() {
+        if (this._workersList.length === 0 && this._workers.length === 0 && typeof this.drain === 'function') {
+            this._idle = true
+            this.drain()
+        }
     }
 }
 
