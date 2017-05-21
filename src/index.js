@@ -18,6 +18,7 @@ class Queue {
     constructor(queue, concurrency) {
         this.queue = queue
         this._concurrency = checkConcurrency(concurrency)
+        this.buffer = this._concurrency / 4
 
         Object.defineProperties(this, {
             'concurrency': {
@@ -26,6 +27,7 @@ class Queue {
                 },
                 set: (value) => {
                     this._concurrency = value
+                    this.buffer = this._concurrency / 4
                     this.bulk()
                 }
             },
@@ -40,6 +42,7 @@ class Queue {
         this._idle = true
         this.paused = false
         this.enableDrain = true
+        
         this.bulk()
     }
     bulk() {
@@ -68,6 +71,9 @@ class Queue {
             }
             if (typeof worker.callback === 'function') {
                 worker.callback(...args)
+            }
+            if (this._workersList.length < this._concurrency - this.buffer && typeof this.unsaturated === 'function') {
+                this.unsaturated()
             }
             this._drain()
             this.next()
