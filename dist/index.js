@@ -25,13 +25,20 @@ class Queue {
         this.queue = queue;
         this._concurrency = checkConcurrency(concurrency);
 
-        Object.defineProperty(this, 'concurrency', {
-            get: () => {
-                return this._concurrency
+        Object.defineProperties(this, {
+            'concurrency': {
+                get: () => {
+                    return this._concurrency
+                },
+                set: (value) => {
+                    this._concurrency = value;
+                    this.bulk();
+                }
             },
-            set: (value) => {
-                this._concurrency = value;
-                this.bulk();
+            'started': {
+                get: () => {
+                    return !this.idle()
+                }
             }
         });
         this._workers = [];
