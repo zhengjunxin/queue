@@ -66,10 +66,13 @@ class Queue {
         this.queue(worker.task, done.bind(this))
     }
     push(task, callback) {
-        const worker = {task, callback}
-        checkCallback(worker)
         this._idle = false
-        this._workers.push(worker)
+        const tasks = Array.isArray(task) ? task : [task]
+        tasks.forEach(t => {
+            const worker = {task: t, callback}
+            checkCallback(worker)
+            this._workers.push(worker)
+        })
     }
     next() {
         if (!this.paused && this.concurrency > this._workersList.length && this._workers.length) {
@@ -100,10 +103,13 @@ class Queue {
         return this._workersList.length
     }
     unshift(task, callback) {
-        const worker = {task, callback}
-        checkCallback(worker)
         this._idle = false
-        this._workers.unshift(worker)
+        const tasks = Array.isArray(task) ? task : [task]
+        tasks.forEach(t => {
+            const worker = {task: t, callback}
+            checkCallback(worker)
+            this._workers.unshift(worker)
+        })
     }
     idle() {
         return this._idle
