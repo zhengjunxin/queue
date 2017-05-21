@@ -52,6 +52,9 @@ class Queue {
             done.called = true;
             this.pull(worker);
 
+            if (args && args[0] && args[0] instanceof Error && typeof this.error === 'function') {
+                this.error(...args, worker.task);
+            }
             if (typeof worker.callback === 'function') {
                 worker.callback(...args);
             }
