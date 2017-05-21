@@ -8,6 +8,12 @@ const checkConcurrency = (concurrency = 1) => {
     return concurrency
 }
 
+const checkCallback = (worker) => {
+    if (worker.callback != null && typeof worker.callback !== 'function') {
+        throw new Error('task callback must be a function')
+    }
+}
+
 class Queue {
     constructor(queue, concurrency) {
         this.queue = queue
@@ -27,7 +33,6 @@ class Queue {
         this._workersList = []
         this._idle = true
         this.paused = false
-
         this.bulk()
     }
     bulk() {
@@ -62,6 +67,7 @@ class Queue {
     }
     push(task, callback) {
         const worker = {task, callback}
+        checkCallback(worker)
         this._idle = false
         this._workers.push(worker)
     }
@@ -95,6 +101,7 @@ class Queue {
     }
     unshift(task, callback) {
         const worker = {task, callback}
+        checkCallback(worker)
         this._idle = false
         this._workers.unshift(worker)
     }
