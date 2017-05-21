@@ -38,6 +38,7 @@ class Queue {
         this._workersList = [];
         this._idle = true;
         this.paused = false;
+        this.enableDrain = true;
         this.bulk();
     }
     bulk() {
@@ -133,13 +134,16 @@ class Queue {
         this.bulk();
     }
     kill() {
+        this.enableDrain = false;
         this._workers.length = 0;
         this._idle = true;
     }
     _drain() {
         if (this._workersList.length === 0 && this._workers.length === 0 && typeof this.drain === 'function') {
             this._idle = true;
-            this.drain();
+            if (this.enableDrain) {
+                this.drain();
+            }
         }
     }
 }
