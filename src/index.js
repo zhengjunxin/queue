@@ -50,7 +50,7 @@ class Queue {
             const bulkNum = Math.min(this._concurrency, this._workers.length)
             if (bulkNum) {
                 for (let i = 0; i < bulkNum; i++) {
-                    const worker = this.next()
+                    this.next()
                 }
             }
             else {
@@ -161,6 +161,4 @@ class Queue {
     }
 }
 
-export function queue(...args) {
-    return new Queue(...args)
-}
+export default Queue
