@@ -1,10 +1,8 @@
-var {queue} = require('../dist');
-var setImmediate = require('async.setimmediate');
-var expect = require('chai').expect;
-var assert = require('assert');
+import Queue from '../src/index'
+import {expect} from 'chai'
+import assert from 'assert'
 
-
-describe('queue', function(){
+describe('new Queue', function(){
     // several tests of these tests are flakey with timing issues
     this.retries(3);
 
@@ -18,7 +16,7 @@ describe('queue', function(){
         // worker2: -2---3
         // order of completion: 2,1,4,3
 
-        var q = queue(function (task, callback) {
+        var q = new Queue(function (task, callback) {
             setTimeout(function () {
                 call_order.push('process ' + task);
                 callback('error', 'arg');
@@ -71,7 +69,7 @@ describe('queue', function(){
 
         // order of completion: 1,2,3,4
 
-        var q = queue(function (task, callback) {
+        var q = new Queue(function (task, callback) {
             setTimeout(function () {
                 call_order.push('process ' + task);
                 callback('error', 'arg');
@@ -120,7 +118,7 @@ describe('queue', function(){
 
     it('zero concurrency', function(done){
         expect(function () {
-            queue(function (task, callback) {
+            new Queue(function (task, callback) {
                 callback(null, task);
             }, 0);
         }).to.throw();
@@ -130,7 +128,7 @@ describe('queue', function(){
     it('error propagation', function(done){
         var results = [];
 
-        var q = queue(function (task, callback) {
+        var q = new Queue(function (task, callback) {
             callback(task.name === 'foo' ? new Error('fooError') : null);
         }, 2);
 
@@ -161,7 +159,7 @@ describe('queue', function(){
     it('global error handler', function(done){
         var results = [];
 
-        var q = queue(function (task, callback) {
+        var q = new Queue(function (task, callback) {
             callback(task.name === 'foo' ? new Error('fooError') : null);
         }, 2);
 
@@ -193,7 +191,7 @@ describe('queue', function(){
     // Repeat that one more time by chaning the concurrency to 5.
     it('changing concurrency', function(done) {
 
-        var q = queue(function(task, callback){
+        var q = new Queue(function(task, callback){
             setTimeout(function(){
                 callback();
             }, 10);
@@ -232,7 +230,7 @@ describe('queue', function(){
         // worker2: -2---3
         // order of completion: 2,1,4,3
 
-        var q = queue(function (task, callback) {
+        var q = new Queue(function (task, callback) {
             running++;
             concurrencyList.push(running);
             setTimeout(function () {
@@ -261,7 +259,7 @@ describe('queue', function(){
     });
 
     it('push with non-function', function(done) {
-        var q = queue(function () {}, 1);
+        var q = new Queue(function () {}, 1);
         expect(function () {
             q.push({}, 1);
         }).to.throw();
@@ -271,7 +269,7 @@ describe('queue', function(){
     it('unshift', function(done) {
         var queue_order = [];
 
-        var q = queue(function (task, callback) {
+        var q = new Queue(function (task, callback) {
             queue_order.push(task);
             callback();
         }, 1);
@@ -288,7 +286,7 @@ describe('queue', function(){
     });
 
     it('too many callbacks', function(done) {
-        var q = queue(function (task, callback) {
+        var q = new Queue(function (task, callback) {
             callback();
             expect(function() {
                 callback();
@@ -307,7 +305,7 @@ describe('queue', function(){
         // worker2: -2---3
         // order of completion: 2,1,4,3
 
-        var q = queue(function (task, callback) {
+        var q = new Queue(function (task, callback) {
             setTimeout(function () {
                 call_order.push('process ' + task);
                 callback('error', task);
@@ -336,7 +334,7 @@ describe('queue', function(){
     });
 
     it('idle', function(done) {
-        var q = queue(function (task, callback) {
+        var q = new Queue(function (task, callback) {
             // Queue is busy when workers are running
             expect(q.idle()).to.equal(false);
             callback();
@@ -366,12 +364,10 @@ describe('queue', function(){
         var concurrencyList = [];
         var pauseCalls = ['process 1', 'process 2', 'process 3'];
 
-        var q = queue(function (task, callback) {
+        var q = new Queue(function (task, callback) {
             running++;
             call_order.push('process ' + task);
-            // [process1, process2]
             concurrencyList.push(running);
-            // [1, 2,]
             setTimeout(function () {
                 running--;
                 callback();
@@ -419,7 +415,7 @@ describe('queue', function(){
 
     it('pause in worker with concurrency', function(done) {
         var call_order = [];
-        var q = queue(function (task, callback) {
+        var q = new Queue(function (task, callback) {
             if (task.isLongRunning) {
                 q.pause();
                 setTimeout(function () {
@@ -447,7 +443,7 @@ describe('queue', function(){
     });
 
     it('kill', function(done) {
-        var q = queue(function (/*task, callback*/) {
+        var q = new Queue(function (/*task, callback*/) {
             setTimeout(function () {
                 throw new Error("Function should never be called");
             }, 20);
@@ -468,7 +464,7 @@ describe('queue', function(){
 
     it('events', function(done) {
         var calls = [];
-        var q = queue(function(task, cb) {
+        var q = new Queue(function(task, cb) {
             // nop
             calls.push('process ' + task);
             setTimeout(cb, 10);
@@ -517,7 +513,7 @@ describe('queue', function(){
 
     it('empty', function(done) {
         var calls = [];
-        var q = queue(function(task, cb) {
+        var q = new Queue(function(task, cb) {
             // nop
             calls.push('process ' + task);
             setImmediate(cb);
@@ -541,7 +537,7 @@ describe('queue', function(){
     // #1367
     it('empty and not idle()', function(done) {
         var calls = [];
-        var q = queue(function(task, cb) {
+        var q = new Queue(function(task, cb) {
             // nop
             calls.push('process ' + task);
             setImmediate(cb);
@@ -568,7 +564,7 @@ describe('queue', function(){
 
     it('saturated', function(done) {
         var saturatedCalled = false;
-        var q = queue(function(task, cb) {
+        var q = new Queue(function(task, cb) {
             setImmediate(cb);
         }, 2);
 
@@ -585,7 +581,7 @@ describe('queue', function(){
 
     it('started', function(done) {
 
-        var q = queue(function(task, cb) {
+        var q = new Queue(function(task, cb) {
             cb(null, task);
         });
 
@@ -598,7 +594,7 @@ describe('queue', function(){
     context('q.saturated(): ', function() {
         it('should call the saturated callback if tasks length is concurrency', function(done) {
             var calls = [];
-            var q = queue(function(task, cb) {
+            var q = new Queue(function(task, cb) {
                 calls.push('process ' + task);
                 setImmediate(cb);
             }, 4);
@@ -636,7 +632,7 @@ describe('queue', function(){
     context('q.unsaturated(): ',function() {
         it('should have a default buffer property that equals 25% of the concurrenct rate', function(done){
             var calls = [];
-            var q = queue(function(task, cb) {
+            var q = new Queue(function(task, cb) {
                 // nop
                 calls.push('process ' + task);
                 setImmediate(cb);
@@ -646,7 +642,7 @@ describe('queue', function(){
         });
         it('should allow a user to change the buffer property', function(done){
             var calls = [];
-            var q = queue(function(task, cb) {
+            var q = new Queue(function(task, cb) {
                 // nop
                 calls.push('process ' + task);
                 setImmediate(cb);
@@ -658,7 +654,7 @@ describe('queue', function(){
         });
         it('should call the unsaturated callback if tasks length is less than concurrency minus buffer', function(done){
             var calls = [];
-            var q = queue(function(task, cb) {
+            var q = new Queue(function(task, cb) {
                 calls.push('process ' + task);
                 setImmediate(cb);
             }, 4);
@@ -698,7 +694,7 @@ describe('queue', function(){
 
     it('remove', function(done) {
         var result = [];
-        var q = queue(function(data, cb) {
+        var q = new Queue(function(data, cb) {
             result.push(data);
             setImmediate(cb);
         });
@@ -715,4 +711,3 @@ describe('queue', function(){
         }
     });
 });
-

@@ -4,16 +4,23 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "mocha",
-    "dev": "rollup -c -w"
+    "test": "mocha --compilers js:babel-core/register",
+    "dev": "rollup -c -w",
+    "pro": "NODE_ENV=production rollup -c",
+    "build": "npm run test && npm run pro",
+    "prepublish": "npm run build"
   },
-  "author": "",
-  "license": "ISC",
+  "author": "joezheng",
+  "license": "MIT",
   "devDependencies": {
-    "async.setimmediate": "^0.5.2",
+    "babel-plugin-external-helpers": "^6.22.0",
+    "babel-preset-latest": "^6.24.1",
+    "babel-register": "^6.26.0",
     "chai": "^3.5.0",
     "mocha": "^3.4.1",
     "rollup": "^0.41.6",
+    "rollup-plugin-babel": "^3.0.2",
+    "rollup-plugin-uglify": "^2.0.1",
     "rollup-watch": "^3.2.2"
   }
 }
