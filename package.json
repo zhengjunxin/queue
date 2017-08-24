@@ -8,7 +8,7 @@
     "dev": "rollup -c -w",
     "pro": "NODE_ENV=production rollup -c",
     "build": "npm run test && npm run pro",
-    "prepublish": "npm run build"
+    "prepublishOnly": "npm run build"
   },
   "author": "joezheng",
   "license": "MIT",
