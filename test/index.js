@@ -1,4 +1,4 @@
-import Queue from '../src/index'
+import Queue from '../dist/index'
 import {expect} from 'chai'
 import assert from 'assert'
 
